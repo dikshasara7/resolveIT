@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Dashboard - IT Department</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: #1e293b;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .navbar .title {
+      font-size: 25px;
+      font-weight: 700;
+    }
+
+    .navbar .links a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #cbd5e1;
+      font-size: 16px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .navbar .links a:hover {
+      color: #fff;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+      padding: 40px;
+    }
+
+    .stat-box {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 25px 30px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      text-align: center;
+    }
+
+    .stat-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    }
+
+    .stat-title {
+      font-size: 18px;
+      color: #475569;
+      margin-bottom: 10px;
+    }
+
+    .stat-number {
+      font-size: 40px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .container {
+      padding: 0 40px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 1px solid #e5e7eb;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 22px;
+      color: #1e293b;
+    }
+
+    .card p {
+      font-size: 15px;
+      color: #475569;
+      margin: 15px 0;
+      line-height: 1.6;
+    }
+
+    .card a {
+      text-decoration: none;
+      display: inline-block;
+      padding: 12px 18px;
+      background: #2563eb;
+      color: white;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .card a:hover {
+      background: #1e40af;
+    }
+
+    .table-container {
+      padding: 40px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+      background: #ffffff;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 15px 18px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+      background: #1e293b;
+      color: white;
+      font-weight: 600;
+      font-size: 17px;
+    }
+
+    tr:hover {
+      background-color: #f1f5f9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="title">Staff Dashboard - IT Department</div>
+    <div class="links">
+      <a href="#">Profile</a>
+      <a href="slogout.html">Logout</a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-container">
+    <div class="stat-box">
+      <div class="stat-title">Total Assigned Issues</div>
+      <div class="stat-number">120</div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-title">Issues Resolved</div>
+      <div class="stat-number">98</div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-title">Pending Issues</div>
+      <div class="stat-number">22</div>
+    </div>
+  </div>
+
+  <!-- Feature Cards -->
+  <div class="container">
+    <div class="card">
+      <h3>Assigned Tasks</h3>
+      <p>View and manage IT-related issues assigned to you.</p>
+      <a href="#">View Tasks</a>
+    </div>
+
+    <div class="card">
+      <h3>Update Issue Status</h3>
+      <p>Change progress, add notes, and mark issues as resolved.</p>
+      <a href="#">Update Status</a>
+    </div>
+
+    <div class="card">
+      <h3>IT Equipment Inventory</h3>
+      <p>Check available computers, printers, accessories & spare parts.</p>
+      <a href="#">View Inventory</a>
+    </div>
+
+    <div class="card">
+      <h3>Maintenance Logs</h3>
+      <p>Track all past repair and servicing records.</p>
+      <a href="#">View Logs</a>
+    </div>
+  </div>
+
+  <!-- Recent Issues Table -->
+  <div class="table-container">
+    <h2 style="margin-bottom: 20px; color:#1e293b;">Recent IT Issues Assigned</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Issue ID</th>
+          <th>Issue</th>
+          <th>Device Type</th>
+          <th>Date Assigned</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>IT-1021</td>
+          <td>Printer not detecting paper</td>
+          <td>Printer</td>
+          <td>2025-01-26</td>
+          <td style="color:orange;font-weight:600;">In Progress</td>
+        </tr>
+
+        <tr>
+          <td>IT-1022</td>
+          <td>Computer auto shutdown</td>
+          <td>Desktop PC</td>
+          <td>2025-02-01</td>
+          <td style="color:green;font-weight:600;">Resolved</td>
+        </tr>
+
+        <tr>
+          <td>IT-1023</td>
+          <td>Internet connectivity issues</td>
+          <td>Network</td>
+          <td>2025-02-05</td>
+          <td style="color:red;font-weight:600;">Pending</td>
+        </tr>
+
+        <tr>
+          <td>IT-1024</td>
+          <td>Keyboard not working</td>
+          <td>Accessory</td>
+          <td>2025-02-08</td>
+          <td style="color:orange;font-weight:600;">In Progress</td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

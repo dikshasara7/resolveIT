@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Staff Profile</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: #f1f5f9;
+    }
+
+    .navbar {
+        background: #1e293b;
+        color: white;
+        padding: 18px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navbar h2 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .navbar a {
+        color: #cbd5e1;
+        margin-left: 20px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+
+    .navbar a:hover {
+        color: white;
+    }
+
+    .profile-container {
+        max-width: 850px;
+        margin: 40px auto;
+        background: white;
+        padding: 35px;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .header-section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .profile-pic {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: #cbd5e1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 35px;
+        color: #475569;
+        font-weight: 700;
+        margin-right: 30px;
+    }
+
+    .info h3 {
+        margin: 0;
+        font-size: 26px;
+        color: #1e293b;
+    }
+
+    .info p {
+        margin: 5px 0;
+        font-size: 16px;
+        color: #475569;
+    }
+
+    .details-box {
+        margin-top: 25px;
+    }
+
+    .details-box h4 {
+        font-size: 20px;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .details-box p {
+        font-size: 16px;
+        color: #475569;
+        line-height: 1.6;
+        margin: 6px 0;
+    }
+</style>
+
+</head>
+<body>
+
+<div class="navbar">
+    <h2>Staff Profile</h2>
+    <div>
+        <a href="staffdashboard.html">Dashboard</a>
+        <a href="logout.html">Logout</a>
+    </div>
+</div>
+
+<div class="profile-container">
+
+    <div class="header-section">
+        <div class="profile-pic">S</div>
+        <div class="info">
+            <h3>Sathish Kumar</h3>
+            <p>Department: Information Technology</p>
+            <p>Role: Technical Staff</p>
+        </div>
+    </div>
+
+    <div class="details-box">
+        <h4>Personal Information</h4>
+        <p><strong>Email:</strong> sathish.itstaff@example.com</p>
+        <p><strong>Phone:</strong> +91 98765 43210</p>
+        <p><strong>Address:</strong> 24, Green Street, Chennai, Tamil Nadu</p>
+    </div>
+
+    <div class="details-box">
+        <h4>Work Information</h4>
+        <p><strong>Employee ID:</strong> ITSTF1023</p>
+        <p><strong>Years of Experience:</strong> 5 years</p>
+        <p><strong>Expertise:</strong> Printers, Desktop PCs, Networks</p>
+    </div>
+
+</div>
+
+</body>
+</html>
+
