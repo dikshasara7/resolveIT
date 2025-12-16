@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+
+    
+    <style>
+        body {
+            margin: 0;
+        font-family: Arial, sans-serif;
+        background:url('https://static.vecteezy.com/system/resources/previews/047/784/391/non_2x/a-colorful-illustration-showcasing-various-components-of-industrial-machinery-including-gears-pumps-and-other-mechanical-parts-designed-in-a-flat-style-free-vector.jpg') center/cover no-repeat;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        }
+
+        .register-box {
+            background: #fff;
+            padding: 25px;
+            width: 350px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-box">
+        <h2>User Registration</h2>
+
+        <input type="text" id="username" placeholder="Username">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+
+        <button onclick="registerUser()">Register</button>
+
+        <div class="message" id="message"></div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function registerUser() {
+            let username = document.getElementById("username").value;
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let confirmPassword = document.getElementById("confirmPassword").value;
+            let message = document.getElementById("message");
+
+            if (username === "" || email === "" || password === "" || confirmPassword === "") {
+                message.style.color = "red";
+                message.innerText = "All fields are required!";
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                message.style.color = "red";
+                message.innerText = "Passwords do not match!";
+                return;
+            }
+
+            let user = {
+                username: username,
+                email: email,
+                password: password
+            };
+
+            localStorage.setItem("user", JSON.stringify(user));
+
+            message.style.color = "green";
+            message.innerText = "Registration successful! 🎉";
+
+            document.getElementById("username").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("password").value = "";
+            document.getElementById("confirmPassword").value = "";
+        }
+    </script>
+
+</body>
+</html>
