@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Staff Work Logs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: #f8fafc;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: #1e293b;
+  color: white;
+}
+
+.navbar h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.navbar a {
+  color: #cbd5e1;
+  margin-left: 20px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar a:hover {
+  color: white;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+  padding: 40px;
+}
+
+.stat-box {
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.stat-title {
+  font-size: 16px;
+  color: #475569;
+}
+
+.stat-number {
+  font-size: 38px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.container {
+  padding: 0 40px 40px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+  background: #1e293b;
+  color: white;
+}
+
+.resolved {
+  color: green;
+  font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>Staff Logs</h2>
+  <div>
+    <a href="staffdashboard.html">Dashboard</a>
+    <a href="slogout.html">Logout</a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-box">
+    <div class="stat-title">Total Complaints</div>
+    <div class="stat-number" id="total">0</div>
+  </div>
+
+  <div class="stat-box">
+    <div class="stat-title">Resolved by Staff</div>
+    <div class="stat-number" id="resolved">0</div>
+  </div>
+
+  <div class="stat-box">
+    <div class="stat-title">Pending / In Progress</div>
+    <div class="stat-number" id="pending">0</div>
+  </div>
+</div>
+
+<div class="container">
+<h3>Resolved Complaints Log</h3>
+
+<table>
+<thead>
+<tr>
+  <th>Complaint ID</th>
+  <th>Subject</th>
+  <th>Description</th>
+  <th>Status</th>
+</tr>
+</thead>
+
+<tbody id="logTable"></tbody>
+</table>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "stafflogin.html";
+
+fetch("http://localhost:8080/complaints/all", {
+  headers: {
+    "Authorization": "Bearer " + token
+  }
+})
+.then(res => res.json())
+.then(result => {
+
+  if (!result.success) {
+    alert(result.message);
+    return;
+  }
+
+  const complaints = result.data;
+
+  document.getElementById("total").innerText = complaints.length;
+
+  const resolved = complaints.filter(c => c.status === "RESOLVED");
+  const pending = complaints.filter(c => c.status !== "RESOLVED");
+
+  document.getElementById("resolved").innerText = resolved.length;
+  document.getElementById("pending").innerText = pending.length;
+
+  const tbody = document.getElementById("logTable");
+  tbody.innerHTML = "";
+
+  if (resolved.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align:center;">
+          No resolved complaints yet
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  resolved.forEach(c => {
+    tbody.innerHTML += `
+      <tr>
+        <td>CMP-${String(c.complaintId).padStart(3, "0")}</td>
+        <td>${c.subject}</td>
+        <td>${c.description}</td>
+        <td class="resolved">RESOLVED</td>
+      </tr>
+    `;
+  });
+});
+</script>
+
+</body>
+</html>

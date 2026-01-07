@@ -9,8 +9,8 @@
     body {
       margin: 0;
       font-family: "Inter", sans-serif;
-      
     }
+
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -123,6 +123,7 @@
     .card a:hover {
       background: #1e40af;
     }
+
     .table-container {
       padding: 40px;
     }
@@ -166,45 +167,46 @@
     </div>
   </div>
 
-  <!--solved section-->
   <div class="stats-container">
     <div class="stat-box">
       <div class="stat-title">Total Complaints Raised</div>
-      <div class="stat-number">10</div>
+      <div class="stat-number" id="totalCount">0</div>
     </div>
 
     <div class="stat-box">
       <div class="stat-title">Solved Complaints</div>
-      <div class="stat-number">9</div>
+      <div class="stat-number" id="resolvedCount">0</div>
     </div>
   </div>
 
-
   <div class="container">
-
     <div class="card">
       <h3>Submit Complaint</h3>
       <p>Report machine issues quickly and describe problems with clarity.</p>
       <a href="submit.html">File Complaint</a>
     </div>
+
     <div class="card">
       <h3>Track Complaint Status</h3>
       <p>View updates, progress, and resolution stages of your submissions.</p>
       <a href="track.html">Track Status</a>
     </div>
+
     <div class="card">
       <h3>My Complaint History</h3>
       <p>Access previously submitted complaints and their detailed outcomes.</p>
       <a href="userhistory.html">View History</a>
     </div>
+
     <div class="card">
       <h3>Feedback & Ratings</h3>
       <p>Share your experience and help improve machine performance.</p>
       <a href="userfeedback.html">Give Feedback</a>
     </div>
   </div>
-   <div class="table-container">
-    <h2 style="margin-bottom: 20px; color:#0f172a;">Recent Complaints</h2>
+
+  <div class="table-container">
+    <h2 style="margin-bottom:20px;color:#0f172a;">Recent Complaints</h2>
 
     <table>
       <thead>
@@ -216,31 +218,63 @@
           <th>Status</th>
         </tr>
       </thead>
-
-      <tbody>
-        <tr>
-          <td>CMP-001</td>
-          <td>Conveyor Belt Not Working</td>
-          <td>2025-02-10</td>
-          <td>2025-02-12</td>
-          <td style="color:green;font-weight:600;">Resolved</td>
-        </tr>
-        <tr>
-          <td>CMP-002</td>
-          <td>Hydraulic Press Oil Leakage</td>
-          <td>2025-02-15</td>
-          <td>2025-02-16</td>
-          <td style="color:green;font-weight:600;">Resolved</td>
-        </tr>
-        <tr>
-          <td>CMP-003</td>
-          <td>3D Printer Jam</td>
-          <td>2025-02-18</td>
-          <td>—</td>
-          <td style="color:orange;font-weight:600;">In Progress</td>
-        </tr>
-      </tbody>
+      <tbody id="complaintsTableBody"></tbody>
     </table>
   </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "login.html";
+    }
+
+    fetch("http://localhost:8080/complaints/user", {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + token
+      }
+    })
+    .then(response => response.json())
+    .then(result => {
+
+      if (!result.success) {
+        alert(result.message);
+        return;
+      }
+
+      const complaints = result.data;
+
+      document.getElementById("totalCount").innerText = complaints.length;
+      document.getElementById("resolvedCount").innerText =
+        complaints.filter(c => c.status === "RESOLVED").length;
+
+      const tbody = document.getElementById("complaintsTableBody");
+      tbody.innerHTML = "";
+
+      complaints.forEach(c => {
+
+        const color =
+          c.status === "RESOLVED" ? "green" :
+          c.status === "IN_PROGRESS" ? "orange" : "red";
+
+        tbody.innerHTML += `
+          <tr>
+            <td>CMP-${String(c.complaintId).padStart(3, "0")}</td>
+            <td>${c.subject}</td>
+            <td>${c.createdAt}</td>
+            <td>${c.resolvedAt ? c.resolvedAt : "—"}</td>
+            <td style="color:${color};font-weight:600;">
+              ${c.status.replace("_"," ")}
+            </td>
+          </tr>
+        `;
+      });
+    });
+  </script>
+
 </body>
 </html>
+
+
+ 

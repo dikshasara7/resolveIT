@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Feedback & Ratings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #f8fafc;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: #0f172a;
+      color: #fff;
+    }
+
+    .navbar .title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .navbar a {
+      color: #cbd5e1;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+    }
+
+    .navbar a:hover {
+      color: #fff;
+    }
+
+    .container {
+      padding: 40px;
+    }
+
+    h2 {
+      color: #0f172a;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      font-size: 15px;
+    }
+
+    th, td {
+      padding: 15px 18px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    th {
+      background: #0f172a;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: #f1f5f9;
+    }
+
+    .rating {
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .low { color: red; }
+    .medium { color: orange; }
+    .high { color: green; }
+
+    .comment {
+      color: #475569;
+    }
+  </style>
+</head>
+
+<body>
+
+<script>
+const token = localStorage.getItem("token");
+const adminEmail = localStorage.getItem("adminEmail");
+
+if (!token || adminEmail !== "admin@gmail.com") {
+  window.location.href = "adminlogin.html";
+}
+</script>
+
+<div class="navbar">
+  <div class="title">Feedback & Ratings</div>
+  <div>
+    <a href="admindashboard.html">Dashboard</a>
+    <a href="alogout.html">Logout</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <h2>User Feedback Overview</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Feedback ID</th>
+        <th>User ID</th>
+        <th>Subject</th>
+        <th>Department ID</th>
+        <th>Rating</th>
+        <th>Comments</th>
+      </tr>
+    </thead>
+
+    <tbody id="feedbackTableBody"></tbody>
+  </table>
+
+</div>
+
+<script>
+fetch("http://localhost:8080/feedback/all", {
+  headers: {
+    "Authorization": "Bearer " + token
+  }
+})
+.then(res => res.json())
+.then(result => {
+
+  if (!result.success) {
+    alert(result.message);
+    return;
+  }
+
+  const tbody = document.getElementById("feedbackTableBody");
+  tbody.innerHTML = "";
+
+  result.data.forEach(f => {
+
+    let ratingClass = "medium";
+    if (f.rating >= 4) ratingClass = "high";
+    else if (f.rating <= 2) ratingClass = "low";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>FB-${String(f.feedbackId).padStart(3, "0")}</td>
+        <td>${f.userId}</td>
+        <td>${f.subject}</td>
+        <td>${f.departmentId}</td>
+        <td class="rating ${ratingClass}">
+          ${f.rating} ★
+        </td>
+        <td class="comment">${f.message}</td>
+      </tr>
+    `;
+  });
+});
+</script>
+
+</body>
+</html>

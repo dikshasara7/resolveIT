@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Complaint History</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            color: #0f172a;
+        }
+
+        .navbar {
+            background: #020617;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .nav-links a {
+            color: #e5e7eb;
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px 32px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .card p {
+            color: #64748b;
+            margin-bottom: 22px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .filters select,
+        .filters input {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #020617;
+            color: white;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .pending {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .view-btn {
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .view-btn:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 800px) {
+            .filters {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h1>User Dashboard</h1>
+    <div class="nav-links">
+        <a href="profile.html">Profile</a>
+        <a href="logout.html">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>My Complaint History</h2>
+        <p>View all your previously submitted complaints and their current status.</p>
+
+        <div class="filters">
+            <select>
+                <option>All Status</option>
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Resolved</option>
+            </select>
+            <input type="date">
+            <input type="date">
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Complaint No</th>
+                    <th>Complaint Title</th>
+                    <th>Category</th>
+                    <th>Date Raised</th>
+                    <th>Date Resolved</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="complaintHistoryBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    fetch("http://localhost:8080/complaints/user", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    })
+    .then(response => response.json())
+    .then(result => {
+
+        if (!result.success) {
+            alert(result.message);
+            return;
+        }
+
+        const complaints = result.data;
+        const tbody = document.getElementById("complaintHistoryBody");
+        tbody.innerHTML = "";
+
+        complaints.forEach(c => {
+
+            let statusClass =
+                c.status === "RESOLVED" ? "resolved" :
+                c.status === "IN_PROGRESS" ? "in-progress" : "pending";
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>CMP-${String(c.complaintId).padStart(3, "0")}</td>
+                    <td>${c.subject}</td>
+                    <td>${c.departmentId ?? "-"}</td>
+                    <td>${c.createdAt}</td>
+                    <td>${c.resolvedAt ? c.resolvedAt : "-"}</td>
+                    <td><span class="status ${statusClass}">${c.status.replace("_"," ")}</span></td>
+                    
+                </tr>
+            `;
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <title>User Registration</title>
 
-    
     <style>
         body {
             margin: 0;
-        font-family: Arial, sans-serif;
-        background:url('https://static.vecteezy.com/system/resources/previews/047/784/391/non_2x/a-colorful-illustration-showcasing-various-components-of-industrial-machinery-including-gears-pumps-and-other-mechanical-parts-designed-in-a-flat-style-free-vector.jpg') center/cover no-repeat;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
+            font-family: Arial, sans-serif;
+            background: url('https://static.vecteezy.com/system/resources/previews/047/784/391/non_2x/a-colorful-illustration-showcasing-various-components-of-industrial-machinery-including-gears-pumps-and-other-mechanical-parts-designed-in-a-flat-style-free-vector.jpg') center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .register-box {
@@ -48,7 +47,12 @@
             cursor: pointer;
         }
 
-        button:hover {
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        button:hover:not(:disabled) {
             background: #0056b3;
         }
 
@@ -61,57 +65,77 @@
 </head>
 <body>
 
-    <div class="register-box">
-        <h2>User Registration</h2>
+<div class="register-box">
+    <h2>User Registration</h2>
 
-        <input type="text" id="username" placeholder="Username">
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+    <input type="text" id="username" placeholder="Username">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <input type="password" id="confirmPassword" placeholder="Confirm Password">
 
-        <button onclick="registerUser()">Register</button>
+    <button id="registerBtn" onclick="registerUser()">Register</button>
 
-        <div class="message" id="message"></div>
-    </div>
+    <div class="message" id="message"></div>
+</div>
 
-    <!-- JavaScript -->
-    <script>
-        function registerUser() {
-            let username = document.getElementById("username").value;
-            let email = document.getElementById("email").value;
-            let password = document.getElementById("password").value;
-            let confirmPassword = document.getElementById("confirmPassword").value;
-            let message = document.getElementById("message");
+<script>
+function registerUser() {
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+    const message = document.getElementById("message");
+    const button = document.getElementById("registerBtn");
 
-            if (username === "" || email === "" || password === "" || confirmPassword === "") {
-                message.style.color = "red";
-                message.innerText = "All fields are required!";
-                return;
-            }
+    message.innerText = "";
 
-            if (password !== confirmPassword) {
-                message.style.color = "red";
-                message.innerText = "Passwords do not match!";
-                return;
-            }
+    if (!username || !email || !password || !confirmPassword) {
+        message.style.color = "red";
+        message.innerText = "All fields are required!";
+        return;
+    }
 
-            let user = {
-                username: username,
-                email: email,
-                password: password
-            };
+    if (password !== confirmPassword) {
+        message.style.color = "red";
+        message.innerText = "Passwords do not match!";
+        return;
+    }
 
-            localStorage.setItem("user", JSON.stringify(user));
+    button.disabled = true;
 
+    fetch("http://localhost:8080/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: username,
+            email: email,
+            password: password
+        })
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === "REGISTERED") {
             message.style.color = "green";
-            message.innerText = "Registration successful! 🎉";
+            message.innerText = "Registration successful! Redirecting to login...";
 
-            document.getElementById("username").value = "";
-            document.getElementById("email").value = "";
-            document.getElementById("password").value = "";
-            document.getElementById("confirmPassword").value = "";
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 1000);
+        } else {
+            message.style.color = "red";
+            message.innerText = "Registration failed";
+            button.disabled = false;
         }
-    </script>
+    })
+    .catch(() => {
+        message.style.color = "red";
+        message.innerText = "Server error";
+        button.disabled = false;
+    });
+}
+</script>
 
 </body>
 </html>

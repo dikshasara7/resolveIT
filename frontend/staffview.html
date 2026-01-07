@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>View Complaint Status</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: #f8fafc;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: #1e293b;
+  color: white;
+}
+
+.navbar h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.navbar a {
+  color: #cbd5e1;
+  margin-left: 20px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar a:hover {
+  color: white;
+}
+
+.container {
+  padding: 40px;
+}
+
+h3 {
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+th {
+  background: #1e293b;
+  color: white;
+}
+
+tr:hover {
+  background: #f1f5f9;
+}
+
+.status {
+  font-weight: 700;
+}
+
+.pending { color: red; }
+.inprogress { color: orange; }
+.resolved { color: green; }
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>Complaint Status</h2>
+  <div>
+    <a href="staffdashboard.html">Dashboard</a>
+    <a href="slogout.html">Logout</a>
+  </div>
+</div>
+
+<div class="container">
+  <h3>All Complaint Status Overview</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Complaint ID</th>
+        <th>Subject</th>
+        <th>Description</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody id="statusTable"></tbody>
+  </table>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "stafflogin.html";
+
+fetch("http://localhost:8080/complaints/all", {
+  headers: {
+    "Authorization": "Bearer " + token
+  }
+})
+.then(res => res.json())
+.then(result => {
+
+  if (!result.success) {
+    alert(result.message);
+    return;
+  }
+
+  const tbody = document.getElementById("statusTable");
+  tbody.innerHTML = "";
+
+  result.data.forEach(c => {
+
+    let statusClass =
+      c.status === "RESOLVED" ? "resolved" :
+      c.status === "IN_PROGRESS" ? "inprogress" : "pending";
+
+    tbody.innerHTML += `
+      <tr>
+        <td>CMP-${String(c.complaintId).padStart(3, "0")}</td>
+        <td>${c.subject}</td>
+        <td>${c.description}</td>
+        <td class="status ${statusClass}">
+          ${c.status.replace("_"," ")}
+        </td>
+      </tr>
+    `;
+  });
+});
+</script>
+
+</body>
+</html>

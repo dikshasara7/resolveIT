@@ -70,25 +70,61 @@
     <input id="email" type="email" placeholder="Email ID" required>
     <input id="password" type="password" placeholder="Password" required>
 
-    <button onclick="validate()">Login</button>
+    <button onclick="loginStaff()">Login</button>
     <p id="msg"></p>
 </div>
 
 <script>
-function validate() {
+function loginStaff() {
+
     const email = document.getElementById("email").value.trim();
-    const pass = document.getElementById("password").value.trim();
+    const password = document.getElementById("password").value.trim();
     const msg = document.getElementById("msg");
 
-    if (email === "" || pass === "") {
-        msg.textContent = "Please fill in all fields.";
+    if (!email || !password) {
+        msg.textContent = "Email and Password are required";
         msg.style.color = "red";
         return;
     }
 
-    // If validation success
-    msg.textContent = "";
-    window.location.href = "staffdashboard.html";
+    fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Invalid credentials");
+        }
+        return response.text();
+    })
+    .then(token => {
+
+        if (!email.toLowerCase().includes("staff")) {
+            msg.textContent = "Access denied. Staff only.";
+            msg.style.color = "red";
+            return;
+        }
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("staffEmail", email);
+
+        msg.textContent = "Login successful";
+        msg.style.color = "green";
+
+        setTimeout(() => {
+            window.location.href = "staffdashboard.html";
+        }, 800);
+    })
+    .catch(() => {
+        msg.textContent = "Invalid email or password";
+        msg.style.color = "red";
+    });
 }
 </script>
 

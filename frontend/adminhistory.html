@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Complaint History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+ <style>
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: #0f172a;
+  color: #fff;
+  position: sticky;
+  top: 0;
+}
+.navbar .title {
+  font-size: 25px;
+  font-weight: 700;
+}
+.navbar .links a {
+  margin-left: 20px;
+  text-decoration: none;
+  color: #cbd5e1;
+  font-size: 16px;
+}
+.navbar .links a:hover {
+  color: #fff;
+}
+.table-container {
+  padding: 40px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+th, td {
+  padding: 15px;
+  border-bottom: 1px solid #e5e7eb;
+}
+th {
+  background: #0f172a;
+  color: white;
+}
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+const token = localStorage.getItem("token");
+const adminEmail = localStorage.getItem("adminEmail");
+
+if (!token || adminEmail !== "admin@gmail.com") {
+  window.location.href = "adminlogin.html";
+}
+</script>
+
+<div class="navbar">
+  <div class="title">Admin Dashboard</div>
+  <div class="links">
+    <a href="aprofile.html">Profile</a>
+    <a href="alogout.html">Logout</a>
+  </div>
+</div>
+
+<div class="table-container">
+  <h2>All Complaints</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Subject</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="complaintTable"></tbody>
+  </table>
+</div>
+
+<script>
+function loadComplaints() {
+  fetch("http://localhost:8080/complaints/all", {
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  })
+  .then(res => res.json())
+  .then(result => {
+    const tbody = document.getElementById("complaintTable");
+    tbody.innerHTML = "";
+
+    result.data.forEach(c => {
+      const isResolved = c.status === "RESOLVED";
+
+      tbody.innerHTML += `
+        <tr>
+          <td>CMP-${String(c.complaintId).padStart(3,"0")}</td>
+          <td>${c.subject}</td>
+          <td>${c.description}</td>
+          <td style="font-weight:600;color:${isResolved ? "green" : "orange"}">
+            ${c.status}
+          </td>
+          <td>
+            <button onclick="resolveComplaint(${c.complaintId})"
+              ${isResolved ? "disabled" : ""}>
+              Resolve
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+  });
+}
+
+function resolveComplaint(id) {
+  fetch(`http://localhost:8080/complaints/status/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ status: "RESOLVED" })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      loadComplaints();
+    } else {
+      alert(data.message);
+    }
+  });
+}
+
+loadComplaints();
+</script>
+
+</body>
+</html>
+

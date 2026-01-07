@@ -48,23 +48,7 @@
     }
 
     .header-section {
-        display: flex;
-        align-items: center;
         margin-bottom: 30px;
-    }
-
-    .profile-pic {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        background: #cbd5e1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 35px;
-        color: #475569;
-        font-weight: 700;
-        margin-right: 30px;
     }
 
     .info h3 {
@@ -103,7 +87,7 @@
 <div class="navbar">
     <h2>Customer Profile</h2>
     <div>
-        <a href="userdashboard.html">Dashboard</a>
+        <a href="userdashboard1.html">Dashboard</a>
         <a href="logout.html">Logout</a>
     </div>
 </div>
@@ -111,9 +95,8 @@
 <div class="profile-container">
 
     <div class="header-section">
-        <div class="profile-pic">S</div>
         <div class="info">
-            <h3>Adittan</h3>
+            <h3 id="userName">Loading...</h3>
             <p>Department: Information Technology</p>
             <p>Role: Customer</p>
         </div>
@@ -121,19 +104,47 @@
 
     <div class="details-box">
         <h4>Personal Information</h4>
-        <p><strong>Email:</strong> adittan@example.com</p>
+        <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
         <p><strong>Phone:</strong> +91 99999 99999</p>
         <p><strong>Address:</strong> 98/99, Chennai, TamilNadu</p>
     </div>
+
     <div class="details-box">
         <h4>Company Information</h4>
-         <p><strong>Company Name: </strong> Infotech IT Consultancy</p>
-        <p><strong>Company Location: </strong>Chennai, Thiruvananthapuram, Kerala, Mumbai, Bangalore</p>
-        <p><strong>GSTIN Number: </strong> 9876789865887A9987ZG998</p>
-        <p><strong>Purchase History: </strong> 9 Products </p>
-        <p><strong>Company Interests: </strong> Printers, Desktop PCs, Networking Devices</p>
+        <p><strong>Company Name:</strong> Infotech IT Consultancy</p>
+        <p><strong>Company Location:</strong> Chennai, Thiruvananthapuram, Kerala, Mumbai, Bangalore</p>
+        <p><strong>GSTIN Number:</strong> 9876789865887A9987ZG998</p>
+        <p><strong>Purchase History:</strong> 9 Products</p>
+        <p><strong>Company Interests:</strong> Printers, Desktop PCs, Networking Devices</p>
     </div>
 
 </div>
+
+<script>
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    fetch("http://localhost:8080/users/me", {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    })
+    .then(response => response.json())
+    .then(result => {
+
+        if (!result.success) {
+            alert(result.message);
+            return;
+        }
+
+        document.getElementById("userName").innerText = result.data.name;
+        document.getElementById("userEmail").innerText = result.data.email;
+    });
+</script>
+
 </body>
 </html>

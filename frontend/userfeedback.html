@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback & Ratings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            color: #0f172a;
+        }
+
+        .navbar {
+            background: #020617;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .nav-links a {
+            color: #e5e7eb;
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px 32px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .card p {
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+        }
+
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        textarea {
+            resize: none;
+            height: 120px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 10px;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .stars span {
+            color: #cbd5e1;
+        }
+
+        .stars span.active {
+            color: #facc15;
+        }
+
+        .btn {
+            background: #2563eb;
+            color: white;
+            padding: 12px 28px;
+            border-radius: 10px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #1e40af;
+        }
+
+        .note {
+            margin-top: 18px;
+            font-size: 13px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <h1>User Dashboard</h1>
+    <div class="nav-links">
+        <a href="profile.html">Profile</a>
+        <a href="logout.html">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h2>Feedback & Ratings</h2>
+        <p>Share your experience to help us improve our service.</p>
+
+        <form onsubmit="submitFeedback(event)">
+            <div class="form-group">
+                <label>Select Complaint</label>
+                <select id="complaintSelect">
+                    <option value="">Select Complaint</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Rate the Resolution</label>
+                <div class="stars" id="stars">
+                    <span>★</span>
+                    <span>★</span>
+                    <span>★</span>
+                    <span>★</span>
+                    <span>★</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Your Feedback</label>
+                <textarea id="feedbackText" placeholder="Write your feedback here..."></textarea>
+            </div>
+
+            <button type="submit" class="btn">Submit Feedback</button>
+
+            <div class="note">
+                Your feedback is valuable and helps us improve our service quality.
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "login.html";
+}
+
+const stars = document.querySelectorAll("#stars span");
+stars.forEach((star, index) => {
+    star.addEventListener("click", () => {
+        stars.forEach((s, i) => {
+            s.classList.toggle("active", i <= index);
+        });
+    });
+});
+
+fetch("http://localhost:8080/complaints/user", {
+    method: "GET",
+    headers: {
+        "Authorization": "Bearer " + token
+    }
+})
+.then(res => res.json())
+.then(result => {
+    if (!result.success) {
+        alert(result.message);
+        return;
+    }
+
+    const select = document.getElementById("complaintSelect");
+
+    result.data.forEach(c => {
+        const option = document.createElement("option");
+        option.value = c.subject;
+        option.textContent = `CMP-${String(c.complaintId).padStart(3, "0")} – ${c.subject}`;
+        select.appendChild(option);
+    });
+});
+
+function submitFeedback(event) {
+    event.preventDefault();
+
+    const complaintSelect = document.getElementById("complaintSelect");
+    const feedbackText = document.getElementById("feedbackText");
+    const rating = document.querySelectorAll("#stars span.active").length;
+
+    if (!complaintSelect.value) {
+        alert("Please select a complaint");
+        return;
+    }
+
+    if (!feedbackText.value || rating === 0) {
+        alert("Please provide rating and feedback");
+        return;
+    }
+
+    const feedbackData = {
+        departmentId: 1,
+        subject: complaintSelect.value,
+        message: feedbackText.value,
+        rating: rating
+    };
+
+    fetch("http://localhost:8080/feedback/submit", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(feedbackData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert("Feedback submitted successfully!");
+            feedbackText.value = "";
+            complaintSelect.value = "";
+            stars.forEach(s => s.classList.remove("active"));
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(() => alert("Server error"));
+}
+</script>
+
+</body>
+</html>
+

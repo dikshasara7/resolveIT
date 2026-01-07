@@ -74,19 +74,52 @@
 
 <script>
 function validate() {
-    const name = document.getElementById("name").value.trim();
+
     const email = document.getElementById("email").value.trim();
-    const pass = document.getElementById("password").value.trim();
+    const password = document.getElementById("password").value.trim();
     const msg = document.getElementById("msg");
 
-    if (!name || !email || !pass) {
-        msg.textContent = "Please fill in all fields.";
+    if (!email || !password) {
+        msg.textContent = "Email and Password are required";
         msg.style.color = "red";
-    } else {
-        window.location.href = "userdashboard.html";
+        return;
     }
+
+    fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Invalid login");
+        }
+        return response.text();  
+    })
+    .then(token => {
+
+        localStorage.setItem("token", token);
+
+        msg.textContent = "Login successful!";
+        msg.style.color = "green";
+
+    
+        setTimeout(() => {
+            window.location.href = "userdashboard1.html";
+        }, 1000);
+    })
+    .catch(error => {
+        msg.textContent = "Invalid email or password";
+        msg.style.color = "red";
+    });
 }
 </script>
+
 
 </body>
 </html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Submit Complaint</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6fb;
+}
+.container {
+    max-width: 700px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+}
+label {
+    font-weight: bold;
+}
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    margin-bottom: 16px;
+}
+button {
+    padding: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Submit Complaint</h2>
+
+<form id="complaintForm">
+    <div class="form-group">
+        <label>Subject</label>
+        <input type="text" id="subject" placeholder="Enter complaint subject" required>
+    </div>
+
+    <div class="form-group">
+        <label>Department</label>
+        <select id="departmentId" required>
+            <option value="">Select department</option>
+            <option value="1">IT</option>
+            <option value="2">Maintenance</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Priority</label>
+        <select id="priority" required>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        <textarea id="description" required></textarea>
+    </div>
+
+    <button type="submit" class="btn">Submit Complaint</button>
+</form>
+
+</div>
+
+<script>
+document.querySelector("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    console.log("JWT TOKEN:", token); // DEBUG
+
+    if (!token) {
+        alert("Login again");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const data = {
+        userId: 1,
+        departmentId: 1,
+        subject: document.querySelector("input").value,
+        description: document.querySelector("textarea").value,
+        status: "PENDING",
+        priority: document.querySelectorAll("select")[1].value.toUpperCase()
+    };
+
+    fetch("http://localhost:8080/complaints/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("403");
+        return res.json();
+    })
+    .then(() => {
+        alert("Complaint submitted successfully");
+        window.location.reload();
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Login again");
+        window.location.href = "login.html";
+    });
+});
+</script>
+
+
+
+
+</body>
+</html>
+
+
